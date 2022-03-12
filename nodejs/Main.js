@@ -1,35 +1,39 @@
+const WebSocket = require('ws').Server;
+const wss = new WebSocket({ port: 5001 });
 
-const PORT = 50000;
-const HOST = 'localHost';
+const Utils = require('./Utils.js');
 
-const dgram = require('dgram');
-const PlayerList = require('./src/PlayerList.js');
-const RoomList = require('./src/RoomList.js');
-var Sort = require('./src/Sort.js');
-const Utils = require('./src/Utils.js');
+const Rooms = new Array();
 
-const server = dgram.createSocket('udp4');
-const utils = new Utils();
-const playerList = new PlayerList(utils);
-const roomList = new RoomList(utils);
-var sort = new Sort(server,roomList,playerList,utils);
+const Players = new Array();
 
-//エラー時の処理
-server.on('error', (err) => {
-    console.log(`sever error\n${err, stack}`);
-    server.close;
+const Sort = require('./Sort.js');
+
+const sort = new Sort(Utils, Players, Rooms);
+
+wss.on('connection', (ws, req) => {
+    console.log('Sec');
+
+    ws.ipAddres = ws._socket.remoteAddress;
+    ws.port = ws._socket.remotePort;
+    ws.uniqueId = new Date().getTime().toString();
+
+    Players.push(ws);
+
+    Utils.rogin(ws.uniqueId, ws);
+    Utils.roomList(ws, Rooms);
+
+    ws.on('message', msg => {
+        sort.SortMesage(msg, ws);
+    });
+})
+
+
+wss.on('close', () => {
+    console.log('close');
+    wss.close;
 });
 
-//メッセージが届いたときの処理
-server.on('message', (msg, rinfo) => {
-    console.log(new String(msg));
-    sort.SortMessage(msg, rinfo.port, rinfo.address);
+wss.on('listening', () => {
+    console.log('serverlisteng');
 });
-
-//サーバーの受付が開始されたときの処理
-server.on('listening', () => {
-    const address = server.address();
-    console.log(`server listerning ${address.address}:${address.port}`);
-});
-
-server.bind(PORT);
