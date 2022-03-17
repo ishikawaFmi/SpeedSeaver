@@ -20,8 +20,8 @@ wss.on('connection', (ws, req) => {
 
     Players.push(ws);
 
-    Utils.rogin(ws.uniqueId, ws);
-    Utils.roomList(ws, Rooms);
+    Utils.Rogin(ws.uniqueId, ws);
+    Utils.RoomList(ws, Rooms);
 
     ws.on('message', msg => {
         sort.SortMesage(msg, ws);

@@ -1,24 +1,44 @@
 const Room = require("./Room");
 
-//ログインしたことを知らせIDを送る
-exports.rogin = (Id, ws) => {
-    var roginData = {};
+//ログインしたことを知らせてIDを送る
+exports.Rogin = function (Id, ws) {
+    const roginData = {};
     roginData['State'] = "Rogin"
     roginData['Id'] = Id;
 
-    var json = JSON.stringify(roginData);
-    ws.send(json);
+    const roginDataJson = JSON.stringify(roginData);
+    ws.send(roginDataJson);
+}
+
+//ログアウトしたらプレイヤーとルームのリストから排除する
+exports.Rogout = function (ws, players, rooms) {
+    players = players.filter(player => {
+        if (player == ws) {
+            return player != ws;
+        }
+    });
+
+    rooms = rooms.filter(room => {
+        if (room == ws.currentRoom) {
+            return room != ws.currentRoom;
+        }
+    });
+
+    if (ws.CurrentRoom != null) {
+        ws.CurrentRoom.RoomDelete();
+    }
 }
 
 //新しくルームを生成する
-exports.crateRoom = (ws, roomName, roomNamber) => {
+exports.CreateRoom = function (ws, roomName, roomNamber) {
     const room = new Room(ws, roomName, roomNamber);
     return room;
 }
 
 //現在の参加可能なルームを送る
-exports.roomList = (ws, rooms) => {
+exports.RoomList = function (ws, rooms, players) {
     const currentRoomlist = new Array();
+
     rooms.forEach(room => {
         if (room.RoomVisible == true) {
             currentRoomlist.push(room);
@@ -30,7 +50,12 @@ exports.roomList = (ws, rooms) => {
     roomListData['RoomList'] = currentRoomlist;
 
     var json = JSON.stringify(roomListData, replacer);
-    ws.send(json);
+    
+    players.forEach(player => {
+        if (player.currentRoom == null) {
+            player.send(json);
+        }
+    });
 }
 
 //ルームの送らない情報を省く
