@@ -11,22 +11,10 @@ exports.Rogin = function (Id, ws) {
 }
 
 //ログアウトしたらプレイヤーとルームのリストから排除する
-exports.Rogout = function (ws, players, rooms) {
-    players = players.filter(player => {
-        if (player == ws) {
-            return player != ws;
-        }
-    });
-
-    rooms = rooms.filter(room => {
-        if (room == ws.currentRoom) {
-            return room != ws.currentRoom;
-        }
-    });
-
-    if (ws.CurrentRoom != null) {
-        ws.CurrentRoom.RoomDelete();
-    }
+exports.Rogout = function (ws) {
+    if (ws.currentRoom != null) {
+        ws.currentRoom.RoomDelete();
+    }  
 }
 
 //新しくルームを生成する
@@ -35,11 +23,18 @@ exports.CreateRoom = function (ws, roomName, roomNamber) {
     return room;
 }
 
+exports.ExitRoom = function (ws, rooms) {
+  return rooms = rooms.filter(room => {
+        return room.RoomNamber != ws.currentRoom.RoomNamber;
+    });
+}
+
 //現在の参加可能なルームを送る
-exports.RoomList = function (ws, rooms, players) {
+exports.RoomList = function (rooms, players) {
     const currentRoomlist = new Array();
 
     rooms.forEach(room => {
+        console.log(room);
         if (room.RoomVisible == true) {
             currentRoomlist.push(room);
         }
@@ -50,9 +45,9 @@ exports.RoomList = function (ws, rooms, players) {
     roomListData['RoomList'] = currentRoomlist;
 
     var json = JSON.stringify(roomListData, replacer);
-    
+
     players.forEach(player => {
-        if (player.currentRoom == null) {
+        if (player.currentRoom == null || player.currentRoom == undefined) {
             player.send(json);
         }
     });

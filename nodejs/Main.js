@@ -18,10 +18,10 @@ wss.on('connection', (ws, req) => {
     ws.port = ws._socket.remotePort;
     ws.uniqueId = new Date().getTime().toString();
 
-    Players.push(ws);
+    sort.players.push(ws);
 
     Utils.Rogin(ws.uniqueId, ws);
-    Utils.RoomList(ws, Rooms);
+    Utils.RoomList(sort.rooms,sort.players);
 
     ws.on('message', msg => {
         sort.SortMesage(msg, ws);

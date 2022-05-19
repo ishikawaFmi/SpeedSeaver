@@ -14,7 +14,20 @@ Sort.prototype.SortMesage = function (msg, ws) {
         case 0://ネットワークの処理(ログアウト等)
             switch (json['MethodName']) {
                 case 'Rogout':
-                    this.utils.Rogout(ws, this.players, this.rooms);
+                    this.utils.Rogout(ws);   
+                    
+                    this.rooms = this.rooms.filter(room => {
+                        if (ws.currentRoom != null || ws.currentRoom != undefined) {
+                            return room.RoomNamber != ws.currentRoom.RoomNamber;
+                        }        
+                    });
+                
+                    this.players = this.players.filter(player => {
+                        if (ws != null || ws != undefined) {
+                            return player != ws;
+                        }
+                    });
+
                     break;
             }
             break;
@@ -27,6 +40,8 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     ws.currentRoom = createRoom;
 
                     this.rooms.push(createRoom);
+
+                    this.utils.RoomList(this.rooms, this.players);
                     break;
                 case 'EnterRoom':
                     const enterRoomJson = JSON.parse(json['MethodData']);
@@ -45,7 +60,9 @@ Sort.prototype.SortMesage = function (msg, ws) {
                             room.RoomSend(gameSceneLoadDataJson)
                         }
                     });
-
+                    break;
+                case 'ExitRoom':
+                   this.rooms = this.utils.ExitRoom(ws, this.rooms);
                     break;
                 case 'GameScene':
                     const room = ws.currentRoom;
@@ -134,7 +151,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     } else {
                         SendWinData['WinOrLose'] = 'Loose';
                         ws.currentRoom.Player1.send(SendWinDataJson);
-                        
+
                         SendWinData['WinOrLose'] = 'Win';
                         ws.currentRoom.Player1.send(SendWinDataJson);
                     }
