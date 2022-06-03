@@ -37,6 +37,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
                         if (room.RoomNamber == enterRoomJson['RoomNamber']) {
                             room.Player2 = ws;
                             room.RoomVisible = false;
+                            
                             ws.currentRoom = room;
 
                             const gameSceneLoadData = {};
