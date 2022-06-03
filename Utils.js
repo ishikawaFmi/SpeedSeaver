@@ -37,6 +37,8 @@ exports.CreateRoom = function (ws, roomName, roomNamber) {
 }
 
 exports.ExitRoom = function (ws, rooms) {
+    ws.currentRoom.RoomDelete();
+    
     return rooms = rooms.filter(room => {
         return room.RoomNamber != ws.currentRoom.RoomNamber;
     });

@@ -50,7 +50,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     break;
                 case 'ExitRoom':
                     this.rooms = this.utils.ExitRoom(ws, this.rooms);
-                    ws.currentRoom = null;
+
                     this.utils.RoomList(this.rooms, this.players);
                     break;
                 case 'GameScene':
