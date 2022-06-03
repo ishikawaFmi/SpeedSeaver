@@ -14,20 +14,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
         case 0://ネットワークの処理(ログアウト等)
             switch (json['MethodName']) {
                 case 'Rogout':
-                    this.utils.Rogout(ws);   
-                    
-                    this.rooms = this.rooms.filter(room => {
-                        if (ws.currentRoom != null || ws.currentRoom != undefined) {
-                            return room.RoomNamber != ws.currentRoom.RoomNamber;
-                        }        
-                    });
-                
-                    this.players = this.players.filter(player => {
-                        if (ws != null || ws != undefined) {
-                            return player != ws;
-                        }
-                    });
-
+                    this.utils.Rogout(ws);
                     break;
             }
             break;
@@ -62,7 +49,9 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     });
                     break;
                 case 'ExitRoom':
-                   this.rooms = this.utils.ExitRoom(ws, this.rooms);
+                    this.rooms = this.utils.ExitRoom(ws, this.rooms);
+
+                    this.utils.RoomList(this.rooms, this.players);
                     break;
                 case 'GameScene':
                     const room = ws.currentRoom;

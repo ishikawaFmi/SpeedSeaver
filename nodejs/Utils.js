@@ -11,10 +11,23 @@ exports.Rogin = function (Id, ws) {
 }
 
 //ログアウトしたらプレイヤーとルームのリストから排除する
-exports.Rogout = function (ws) {
+exports.Rogout = function (ws, rooms, players) {
     if (ws.currentRoom != null) {
         ws.currentRoom.RoomDelete();
-    }  
+    }
+    rooms = rooms.filter(room => {
+        if (ws.currentRoom != null || ws.currentRoom != undefined) {
+            return room.RoomNamber != ws.currentRoom.RoomNamber;
+        }
+    });
+
+    players = players.filter(player => {
+        if (ws != null || ws != undefined) {
+            return player != ws;
+        }
+    });
+
+    this.RoomList(rooms, players);
 }
 
 //新しくルームを生成する
@@ -24,9 +37,12 @@ exports.CreateRoom = function (ws, roomName, roomNamber) {
 }
 
 exports.ExitRoom = function (ws, rooms) {
-  return rooms = rooms.filter(room => {
+    ws.currentRoom.RoomDelete();
+    
+    return rooms = rooms.filter(room => {
         return room.RoomNamber != ws.currentRoom.RoomNamber;
     });
+   
 }
 
 //現在の参加可能なルームを送る
