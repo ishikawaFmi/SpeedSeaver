@@ -26,8 +26,6 @@ exports.Rogout = function (ws, rooms, players) {
             return player != ws;
         }
     });
-
-    this.RoomList(rooms, players);
 }
 
 //新しくルームを生成する
@@ -37,9 +35,7 @@ exports.CreateRoom = function (ws, roomName, roomNamber) {
 }
 
 exports.ExitRoom = function (ws, rooms) {
-    ws.currentRoom.RoomDelete();
-    
-    return rooms = rooms.filter(room => {
+         return rooms = rooms.filter(room => {
         return room.RoomNamber != ws.currentRoom.RoomNamber;
     });
    

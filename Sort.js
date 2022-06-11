@@ -15,6 +15,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
             switch (json['MethodName']) {
                 case 'Rogout':
                     this.utils.Rogout(ws);
+                    this.utils.RoomList(this.rooms, this.players);
                     break;
             }
             break;
@@ -51,7 +52,7 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     break;
                 case 'ExitRoom':
                     this.rooms = this.utils.ExitRoom(ws, this.rooms);
-
+                    ws.currentRoom.RoomDelete();
                     this.utils.RoomList(this.rooms, this.players);
                     break;
                 case 'GameScene':
