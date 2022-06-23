@@ -15,17 +15,26 @@ exports.Rogout = function (ws, rooms, players) {
     if (ws.currentRoom != null) {
         ws.currentRoom.RoomDelete();
     }
-    rooms = rooms.filter(room => {
-        if (ws.currentRoom != null || ws.currentRoom != undefined) {
-            return room.RoomNamber != ws.currentRoom.RoomNamber;
-        }
-    });
 
-    players = players.filter(player => {
-        if (ws != null || ws != undefined) {
-            return player != ws;
-        }
-    });
+    if (rooms != null || rooms != undefined) {
+        rooms = rooms.filter(room => {
+            if (ws.currentRoom != null || ws.currentRoom != undefined) {
+                if (ws.currentRoom.Player1 == ws || ws.currentRoom.Player2 == ws) {
+                    ws.currentRoom.Player1 = null;
+                    ws.currentRoom.Player2 = null
+                }
+                return room.RoomNamber != ws.currentRoom.RoomNamber;
+            }
+        });
+    }
+
+    if (players != null || players != undefined) {
+        players = players.filter(player => {
+            if (ws != null || ws != undefined) {
+                return player != ws;
+            }
+        });
+    }
 }
 
 //新しくルームを生成する
@@ -35,10 +44,10 @@ exports.CreateRoom = function (ws, roomName, roomNamber) {
 }
 
 exports.ExitRoom = function (ws, rooms) {
-         return rooms = rooms.filter(room => {
+    return rooms = rooms.filter(room => {
         return room.RoomNamber != ws.currentRoom.RoomNamber;
     });
-   
+
 }
 
 //現在の参加可能なルームを送る
@@ -46,7 +55,6 @@ exports.RoomList = function (rooms, players) {
     const currentRoomlist = new Array();
 
     rooms.forEach(room => {
-        console.log(room);
         if (room.RoomVisible == true) {
             currentRoomlist.push(room);
         }

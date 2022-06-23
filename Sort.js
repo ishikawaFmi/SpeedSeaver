@@ -33,7 +33,6 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     break;
                 case 'EnterRoom':
                     const enterRoomJson = JSON.parse(json['MethodData']);
-                    console.log(enterRoomJson);
                     this.rooms.forEach(room => {
                         if (room.RoomNamber == enterRoomJson['RoomNamber']) {
                             room.Player2 = ws;
@@ -57,7 +56,6 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     break;
                 case 'GameScene':
                     const room = ws.currentRoom;
-                    console.log(ws.currentRoom)
                     room.RoomPreparation++;
 
                     if (room.RoomPreparation >= 2) {
@@ -83,6 +81,8 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     const incetanceCardDataJson = JSON.stringify(incetanceCardData);
 
                     ws.currentRoom.RoomSend(incetanceCardDataJson);
+
+                    ws.isNotCard = false;
                     break;
                 case 'ChengeCard':
                     const chengeCard = JSON.parse(json['MethodData']);
@@ -129,22 +129,26 @@ Sort.prototype.SortMesage = function (msg, ws) {
                     break;
                 case 'SendWin':
                     const SendWinData = {};
-                    SendWinData['State'] = 'CheakWin';
+                    SendWinData['State'] = 'SendWin';
 
-                    const SendWinDataJson = JSON.stringify(SendWinData);
+                    var SendWinDataJson = null;
 
                     if (ws.currentRoom.Player1 == ws) {
+                        SendWinData['WinOrLose'] = 'Loose';
+                        SendWinDataJson = JSON.stringify(SendWinData);
+                        ws.currentRoom.Player1.send(SendWinDataJson);
+
                         SendWinData['WinOrLose'] = 'Win';
+                        SendWinDataJson = JSON.stringify(SendWinData);
                         ws.currentRoom.Player2.send(SendWinDataJson);
-
-                        SendWinData['WinOrLose'] = 'Loose';
-                        ws.currentRoom.Player1.send(SendWinDataJson);
                     } else {
-                        SendWinData['WinOrLose'] = 'Loose';
+                        SendWinData['WinOrLose'] = 'Win';
+                        SendWinDataJson = JSON.stringify(SendWinData);
                         ws.currentRoom.Player1.send(SendWinDataJson);
 
-                        SendWinData['WinOrLose'] = 'Win';
-                        ws.currentRoom.Player1.send(SendWinDataJson);
+                        SendWinData['WinOrLose'] = 'Loose';
+                        SendWinDataJson = JSON.stringify(SendWinData);
+                        ws.currentRoom.Player2.send(SendWinDataJson);
                     }
                     break;
             }
